@@ -1,0 +1,19 @@
+{
+  "name": "rancher-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.16.2",
+    "debug": "^3.0.1",
+    "dotenv": "^4.0.0",
+    "ramda": "^0.24.1"
+  }
+}
