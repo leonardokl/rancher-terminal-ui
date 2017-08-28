@@ -1,4 +1,3 @@
-// const debug = require('debug')('service')
 const api = require('./api')
 
 class Service {
