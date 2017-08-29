@@ -1,13 +1,13 @@
 require('dotenv').config()
 
 const R = require('ramda')
-// const debug = require('debug')('index')
-// const blessed = require('blessed')
+const debug = require('debug')('index')
+const blessed = require('blessed')
 const service = require('./service')
 const screen = require('./widgets/screen')
 const Splash = require('./widgets/Splash')
 const List = require('./widgets/List')
-
+const Service = require('./widgets/Service')
 const store = {
   projectID: null,
   stackID: null,
@@ -34,33 +34,44 @@ function removeLoader () {
   screen.render()
 }
 
-function handleError () {
-  splash.setContent('{center}Error{/center}')
+function handleError (err) {
+  splash.setContent(`{center}Error: ${err.message}{/center}`)
 }
 
-function initServiceScreen () {
+function initServiceScreen () {debug('service')
   addLoader()
 
   service.getProjectServiceByID(store.projectID, store.serviceID)
     .then(({ data }) => {
-      splash.setContent(`{center}{bold}${data.name}{/bold}{/center}`)
-      splash.setLine(1, `{bold}ID:{/bold} ${data.id}`)
-      splash.setLine(2, `{bold}Health State:{/bold} ${data.healthState}`)
-      splash.setLine(2, `{bold}Scale:{/bold} ${data.currentScale}`)
-      splash.setLine(3, `{bold}Image:{/bold} ${data.launchConfig.imageUuid.substring(7)}`)
+      const el = Service({ data })
+      // splash.setContent(`{center}{bold}${data.name}{/bold}{/center}`)
+      // splash.setLine(1, `{bold}ID:{/bold} ${data.id}`)
+      // splash.setLine(2, `{bold}Health State:{/bold} ${data.healthState}`)
+      // splash.setLine(2, `{bold}Scale:{/bold} ${data.currentScale}`)
+      // splash.setLine(3, `{bold}Image:{/bold} ${data.launchConfig.imageUuid.substring(7)}`)
 
-      splash.key(['backspace'], () => {
-        splash.destroy()
+      screen.title = `${store.serviceID} - Services - Rancher`
+
+      screen.append(el)
+      screen.render()
+
+      el.key(['backspace'], () => {
+        debug('service.backspace')
+        el.free()
+        el.destroy()
         renderServices()
       })
     })
-    .catch(() => splash.setContent('{center}Error{/center}'))
+    .catch(handleError)
+    .then(removeLoader)
     .then(() => screen.render())
 }
 
-function renderServices () {
+function renderServices () {debug('services')
   const onSelect = (el, data) => {
     store.serviceID = data.id
+
+    el.free()
     el.destroy()
     initServiceScreen()
   }
@@ -73,6 +84,8 @@ function renderServices () {
   screen.render()
 
   list.key(['backspace'], () => {
+    debug('services.backspace')
+    list.free()
     list.destroy()
     renderStacks()
   })
@@ -98,10 +111,11 @@ function initServicesScreen () {
   }
 }
 
-function renderStacks () {
+function renderStacks () {debug('stacks')
   const onSelect = (el, data) => {
     store.stackID = data.id
 
+    el.free()
     el.destroy()
     initServicesScreen()
   }
@@ -112,6 +126,8 @@ function renderStacks () {
   screen.append(list)
 
   list.key(['backspace'], () => {
+    debug('stacks.backspace')
+    list.free()
     list.destroy()
     renderProjects()
   })
@@ -140,6 +156,7 @@ function renderProjects () {
   const onSelect = (el, data) => {
     store.projectID = data.id
 
+    el.free()
     el.destroy()
     initStacksScreen()
   }
