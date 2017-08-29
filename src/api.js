@@ -1,4 +1,4 @@
-const Axios = require('axios')
+const axios = require('axios')
 const debug = require('debug')('api')
 
 const { RANCHER_URL, RANCHER_ACCESS_KEY, RANCHER_SECRET_KEY } = process.env
@@ -8,13 +8,13 @@ const auth = {
   password: RANCHER_SECRET_KEY
 }
 
-const axios = Axios.create({
+const axiosInstance = axios.create({
   auth,
   withCredentials: true,
   baseURL: `${RANCHER_URL}/v2-beta/`
 })
 
-axios.interceptors.request.use(
+axiosInstance.interceptors.request.use(
   config => {
     debug(config.method, config.url)
 
@@ -23,4 +23,4 @@ axios.interceptors.request.use(
   error => Promise.reject(error)
 )
 
-module.exports = axios
+module.exports = axiosInstance

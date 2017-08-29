@@ -38,17 +38,12 @@ function handleError (err) {
   splash.setContent(`{center}Error: ${err.message}{/center}`)
 }
 
-function initServiceScreen () {debug('service')
+function initServiceScreen () {
   addLoader()
 
   service.getProjectServiceByID(store.projectID, store.serviceID)
     .then(({ data }) => {
       const el = Service({ data })
-      // splash.setContent(`{center}{bold}${data.name}{/bold}{/center}`)
-      // splash.setLine(1, `{bold}ID:{/bold} ${data.id}`)
-      // splash.setLine(2, `{bold}Health State:{/bold} ${data.healthState}`)
-      // splash.setLine(2, `{bold}Scale:{/bold} ${data.currentScale}`)
-      // splash.setLine(3, `{bold}Image:{/bold} ${data.launchConfig.imageUuid.substring(7)}`)
 
       screen.title = `${store.serviceID} - Services - Rancher`
 
@@ -56,8 +51,6 @@ function initServiceScreen () {debug('service')
       screen.render()
 
       el.key(['backspace'], () => {
-        debug('service.backspace')
-        el.free()
         el.destroy()
         renderServices()
       })
@@ -67,11 +60,10 @@ function initServiceScreen () {debug('service')
     .then(() => screen.render())
 }
 
-function renderServices () {debug('services')
+function renderServices () {
   const onSelect = (el, data) => {
     store.serviceID = data.id
 
-    el.free()
     el.destroy()
     initServiceScreen()
   }
@@ -84,8 +76,6 @@ function renderServices () {debug('services')
   screen.render()
 
   list.key(['backspace'], () => {
-    debug('services.backspace')
-    list.free()
     list.destroy()
     renderStacks()
   })
@@ -111,11 +101,10 @@ function initServicesScreen () {
   }
 }
 
-function renderStacks () {debug('stacks')
+function renderStacks () {
   const onSelect = (el, data) => {
     store.stackID = data.id
 
-    el.free()
     el.destroy()
     initServicesScreen()
   }
@@ -126,8 +115,6 @@ function renderStacks () {debug('stacks')
   screen.append(list)
 
   list.key(['backspace'], () => {
-    debug('stacks.backspace')
-    list.free()
     list.destroy()
     renderProjects()
   })
@@ -156,7 +143,6 @@ function renderProjects () {
   const onSelect = (el, data) => {
     store.projectID = data.id
 
-    el.free()
     el.destroy()
     initStacksScreen()
   }
