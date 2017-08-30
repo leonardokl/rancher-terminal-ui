@@ -1,12 +1,12 @@
 const blessed = require('blessed')
 
 const Splash = () => blessed.box({
-  top: 'center',
-  left: 'center',
-  width: '50%',
-  height: '50%',
+  right: 0,
+  width: '80%',
+  height: '100%',
   border: {
-    type: 'line'
+    type: 'line',
+    fg: '#0075a8'
   },
   tags: true
 })

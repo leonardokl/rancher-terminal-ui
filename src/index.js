@@ -20,6 +20,23 @@ const store = {
 screen.title = 'Rancher'
 
 const splash = Splash()
+var title = blessed.box({
+  parent: screen,
+  padding: 1,
+  content: '{bold}Rancher CLI{/bold}',
+  width: '20%',
+  height: '100%',
+  tags: true,
+  border: {
+    type: 'line'
+  },
+  style: {
+    fg: 'white',
+    border: {
+      fg: '#0075a8'
+    }
+  }
+})
 
 screen.render()
 
@@ -69,9 +86,23 @@ function renderServices () {
   }
   const { projectID, stackID } = store
   const nameSpace = `${projectID}/${stackID}`
-  const list = List({ data: store.services[nameSpace], onSelect })
+  const list = List({ label: 'Services', data: store.services[nameSpace], onSelect })
+  const listBar = blessed.listbar({
+    bottom: 0,
+    left: 'center',
+    width: '50%',
+    height: 10,
+    tags: true,
+    keys: true,
+    autoCommandKeys: true,
+    items: ['Quick upgrade'],
+    commands: {
+      'Quick upgrade': () => console.log('Upgrading')
+    }
+  })
 
   screen.title = 'Services - Rancher'
+  screen.append(listBar)
   screen.append(list)
   screen.render()
 
@@ -109,7 +140,7 @@ function renderStacks () {
     initServicesScreen()
   }
 
-  const list = List({ data: store.stacks[store.projectID], onSelect })
+  const list = List({ label: 'Stacks', data: store.stacks[store.projectID], onSelect })
 
   screen.title = 'Stacks - Rancher'
   screen.append(list)
@@ -146,7 +177,7 @@ function renderProjects () {
     el.destroy()
     initStacksScreen()
   }
-  const list = List({ data: store.projects, onSelect })
+  const list = List({ label: 'Environments', data: store.projects, onSelect })
 
   screen.title = 'Environments - Rancher'
   screen.append(list)
