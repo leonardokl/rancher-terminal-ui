@@ -8,6 +8,8 @@ const screen = require('./widgets/screen')
 const Splash = require('./widgets/Splash')
 const List = require('./widgets/List')
 const Service = require('./widgets/Service')
+const Environments = require('./widgets/Environments')
+
 const store = {
   projectID: null,
   stackID: null,
@@ -20,23 +22,7 @@ const store = {
 screen.title = 'Rancher'
 
 const splash = Splash()
-var title = blessed.box({
-  parent: screen,
-  padding: 1,
-  content: '{bold}Rancher CLI{/bold}',
-  width: '20%',
-  height: '100%',
-  tags: true,
-  border: {
-    type: 'line'
-  },
-  style: {
-    fg: 'white',
-    border: {
-      fg: '#0075a8'
-    }
-  }
-})
+const environments = Environments({})
 
 screen.render()
 
@@ -65,12 +51,14 @@ function initServiceScreen () {
       screen.title = `${store.serviceID} - Services - Rancher`
 
       screen.append(el)
-      screen.render()
 
       el.key(['backspace'], () => {
+        screen.unkey('right', (e) => console.log(e))
         el.destroy()
         renderServices()
       })
+      screen.key(['right'], () => el.focus())
+      screen.render()
     })
     .catch(handleError)
     .then(removeLoader)
@@ -81,6 +69,7 @@ function renderServices () {
   const onSelect = (el, data) => {
     store.serviceID = data.id
 
+    screen.unkey('right', (e) => console.log(e))
     el.destroy()
     initServiceScreen()
   }
@@ -104,9 +93,11 @@ function renderServices () {
   screen.title = 'Services - Rancher'
   screen.append(listBar)
   screen.append(list)
+  screen.key(['right'], () => list.focus())
   screen.render()
 
   list.key(['backspace'], () => {
+    screen.unkey('right', (e) => console.log(e))
     list.destroy()
     renderStacks()
   })
@@ -137,6 +128,7 @@ function renderStacks () {
     store.stackID = data.id
 
     el.destroy()
+    screen.unkey('right', (e) => console.log(e))
     initServicesScreen()
   }
 
@@ -145,16 +137,12 @@ function renderStacks () {
   screen.title = 'Stacks - Rancher'
   screen.append(list)
 
-  list.key(['backspace'], () => {
-    list.destroy()
-    renderProjects()
-  })
-
+  screen.key(['right'], () => list.focus())
+  
   screen.render()
 }
 
 function initStacksScreen () {
-  addLoader()
 
   if (store.stacks[store.projectID]) {
     removeLoader()
@@ -165,7 +153,6 @@ function initStacksScreen () {
       .then(data => { store.stacks[store.projectID] = data })
       .then(renderStacks)
       .catch(handleError)
-      .then(removeLoader)
       .then(() => screen.render())
   }
 }
@@ -174,25 +161,31 @@ function renderProjects () {
   const onSelect = (el, data) => {
     store.projectID = data.id
 
-    el.destroy()
     initStacksScreen()
   }
-  const list = List({ label: 'Environments', data: store.projects, onSelect })
+  const { projects } = store
+  const [firstProject] = projects
+  const list = Environments({ data: projects, onSelect })
 
   screen.title = 'Environments - Rancher'
   screen.append(list)
+
+  if (firstProject) {
+    store.projectID = firstProject.id
+    initStacksScreen()
+  }
+
+  screen.key(['left'], () => list.focus())
+
   screen.render()
 }
 
 function initProjectsScreen () {
-  addLoader()
-
   service.findProjects()
     .then(R.path(['data', 'data']))
     .then(data => { store.projects = data })
     .then(renderProjects)
     .catch(handleError)
-    .then(removeLoader)
     .then(() => screen.render())
 }
 
