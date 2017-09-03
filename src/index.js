@@ -7,8 +7,10 @@ const service = require('./service')
 const screen = require('./widgets/screen')
 const Splash = require('./widgets/Splash')
 const List = require('./widgets/List')
+const Services = require('./widgets/Services')
 const Service = require('./widgets/Service')
 const Environments = require('./widgets/Environments')
+const Stacks = require('./widgets/Stacks')
 
 const store = {
   projectID: null,
@@ -38,6 +40,7 @@ function removeLoader () {
 }
 
 function handleError (err) {
+  console.error(err)
   splash.setContent(`{center}Error: ${err.message}{/center}`)
 }
 
@@ -75,29 +78,29 @@ function renderServices () {
   }
   const { projectID, stackID } = store
   const nameSpace = `${projectID}/${stackID}`
-  const list = List({ label: 'Services', data: store.services[nameSpace], onSelect })
-  const listBar = blessed.listbar({
-    bottom: 0,
-    left: 'center',
-    width: '50%',
-    height: 10,
-    tags: true,
-    keys: true,
-    autoCommandKeys: true,
-    items: ['Quick upgrade'],
-    commands: {
-      'Quick upgrade': () => console.log('Upgrading')
-    }
-  })
+  const list = Services({ label: 'Services', data: store.services[nameSpace], onSelect })
+  // const listBar = blessed.listbar({
+  //   bottom: 0,
+  //   left: 'center',
+  //   width: '50%',
+  //   height: 10,
+  //   tags: true,
+  //   keys: true,
+  //   autoCommandKeys: true,
+  //   items: ['Quick upgrade'],
+  //   commands: {
+  //     'Quick upgrade': () => console.log('Upgrading')
+  //   }
+  // })
 
   screen.title = 'Services - Rancher'
-  screen.append(listBar)
+  // screen.append(listBar)
   screen.append(list)
-  screen.key(['right'], () => list.focus())
+  screen.key(['right'], () => list.listFocus())
   screen.render()
 
-  list.key(['backspace'], () => {
-    screen.unkey('right', (e) => console.log(e))
+  list.listKey(['backspace'], () => {
+    screen.unkey('right', (e) => console.log('BACKSPACE'))
     list.destroy()
     renderStacks()
   })
@@ -131,8 +134,8 @@ function renderStacks () {
     screen.unkey('right', (e) => console.log(e))
     initServicesScreen()
   }
-
-  const list = List({ label: 'Stacks', data: store.stacks[store.projectID], onSelect })
+  const stacks = store.stacks[store.projectID]
+  const list = Stacks({ label: 'Stacks', data: stacks, onSelect })
 
   screen.title = 'Stacks - Rancher'
   screen.append(list)
@@ -143,7 +146,6 @@ function renderStacks () {
 }
 
 function initStacksScreen () {
-
   if (store.stacks[store.projectID]) {
     removeLoader()
     renderStacks()
@@ -160,27 +162,28 @@ function initStacksScreen () {
 function renderProjects () {
   const onSelect = (el, data) => {
     store.projectID = data.id
-
+    screen.unkey('right', (e) => console.log(e))
     initStacksScreen()
   }
   const { projects } = store
   const [firstProject] = projects
-  const list = Environments({ data: projects, onSelect })
+  const environments = Environments({ data: projects, onSelect })
 
   screen.title = 'Environments - Rancher'
-  screen.append(list)
+  screen.append(environments)
 
   if (firstProject) {
     store.projectID = firstProject.id
     initStacksScreen()
   }
 
-  screen.key(['left'], () => list.focus())
+  screen.key(['left'], () => environments.focus())
 
   screen.render()
 }
 
 function initProjectsScreen () {
+  console.log('init')
   service.findProjects()
     .then(R.path(['data', 'data']))
     .then(data => { store.projects = data })

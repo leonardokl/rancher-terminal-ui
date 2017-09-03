@@ -1,15 +1,17 @@
 const R = require('ramda')
 const blessed = require('blessed')
+const config = require('../config')
 
 const styles = {
   list: {
+    fg: 'magenta',
     item: {
       hover: {
-        bg: 'red'
+        bg: config.primaryColor
       }
     },
     selected: {
-      bg: 'red',
+      bg: config.primaryColor,
       bold: true
     }
   }
@@ -29,7 +31,7 @@ function Environments ({ data = [], onSelect = () => 1 }) {
     label: 'Environments',
     border: {
       type: 'line',
-      fg: '#0075a8'
+      fg: config.primaryColor
     },
     style: styles.list
   })

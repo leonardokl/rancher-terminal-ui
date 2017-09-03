@@ -1,4 +1,5 @@
 const blessed = require('blessed')
+const config = require('../config')
 
 const Splash = () => blessed.box({
   right: 0,
@@ -6,7 +7,7 @@ const Splash = () => blessed.box({
   height: '100%',
   border: {
     type: 'line',
-    fg: '#0075a8'
+    fg: config.primaryColor
   },
   tags: true
 })
