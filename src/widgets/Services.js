@@ -85,7 +85,7 @@ function Stacks ({ label, data = [], onSelect = () => 1 }) {
   list.on('select', (_, index) => {
     const environment = data[index - 1]
 
-    onSelect(list, environment)
+    onSelect(container, environment)
   })
 
   return container

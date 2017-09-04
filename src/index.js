@@ -79,22 +79,9 @@ function renderServices () {
   const { projectID, stackID } = store
   const nameSpace = `${projectID}/${stackID}`
   const list = Services({ label: 'Services', data: store.services[nameSpace], onSelect })
-  // const listBar = blessed.listbar({
-  //   bottom: 0,
-  //   left: 'center',
-  //   width: '50%',
-  //   height: 10,
-  //   tags: true,
-  //   keys: true,
-  //   autoCommandKeys: true,
-  //   items: ['Quick upgrade'],
-  //   commands: {
-  //     'Quick upgrade': () => console.log('Upgrading')
-  //   }
-  // })
+
 
   screen.title = 'Services - Rancher'
-  // screen.append(listBar)
   screen.append(list)
   screen.key(['right'], () => list.listFocus())
   screen.render()
