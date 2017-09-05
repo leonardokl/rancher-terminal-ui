@@ -1,11 +1,14 @@
 {
-  "name": "rancher-cli",
+  "name": "rancher-terminal-ui",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node ./src",
+    "start": "node ./lib",
     "test": "standard"
+  },
+  "bin": {
+    "rancher": "./index.js"
   },
   "keywords": [],
   "author": "",
