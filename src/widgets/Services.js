@@ -28,8 +28,8 @@ const styles = {
 }
 
 function Stacks ({ label, data = [], onSelect = () => 1 }) {
-  const items = data.map(i => [i.name, i.healthState])
-  const rows = R.prepend(['Name', 'Health'], items)
+  const items = data.map(i => [i.name, i.healthState, i.state])
+  const rows = R.prepend(['Name', 'Health', 'State'], items)
   const container = blessed.box({
     right: 0,
     width: '80%',
@@ -57,23 +57,31 @@ function Stacks ({ label, data = [], onSelect = () => 1 }) {
     align: 'left',
     style: styles.list
   })
-  const listBar = blessed.listbar({
+  const listBarContainer = blessed.listbar({
     bottom: 0,
     right: 0,
+    label: 'Actions',
     width: '100%',
     height: '10%',
+    border: {
+      type: 'line',
+      fg: '#0075a8'
+    },
+  })
+  const listBar = blessed.listbar({
     tags: true,
     keys: true,
     autoCommandKeys: true,
     items: ['Quick upgrade'],
+    top: 'center',
     commands: {
       'Restart': () => console.log('Restarting'),
       'Quick upgrade': () => console.log('Upgrading')
     }
   })
-
+  listBarContainer.append(listBar)
   container.append(box)
-  container.append(listBar)
+  container.append(listBarContainer)
 
   list.setData(rows)
   list.focus()
